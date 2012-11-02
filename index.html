@@ -1,0 +1,170 @@
+<!doctype html>  
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		<title>H</title>
+	</head>
+	
+	<body>
+		<div id="content">
+			<div id="circle"></div>
+			<textarea id="in"></textarea>
+			<div id="out"></div>
+		</div>
+		<script type="text/javascript" src="./jquery.js"> </script>
+		<script type="text/javascript" src="./underscore.js"> </script>
+		<script type="text/javascript" src="./raphael.js"> </script>
+		<script>
+		    var targetAge = total = 305;
+		    var current = 305;
+
+
+ var r = Raphael($("#circle")[0], 600, 600),
+    R = 245,
+    param = {stroke: "#ffc83a", "stroke-width": 70},
+    marksAttr = {fill: "#ffc83a", stroke: "none"};
+// Custom Attribute
+r.customAttributes.arc = function (value, total, R) {
+    var alpha = 360 / total * value,
+        a = (90 - alpha) * Math.PI / 180,
+        x = 300 + R * Math.cos(a),
+        y = 300 - R * Math.sin(a),
+        path;
+    if (total == value) {
+        path = [["M", 300, 300 - R], ["A", R, R, 0, 1, 1, 299.99, 300 - R]];
+    } else {
+        path = [["M", 300, 300 - R], ["A", R, R, 0, +(alpha > 180), 1, x, y]];
+    }
+    return {path: path, stroke: "#ffc83a"};
+};
+
+drawMarks(R, total);
+var sec = r.path().attr(param).attr({arc: [305, total, R]});
+
+
+function updateVal(value, R, hand) {
+  hand.animate({arc: [value, total, R]}, 1000, "linear");
+}
+
+function drawMarks(R, total) {
+    var out = r.set();
+    for (var value = 0; value < total; value++) {
+        var alpha = 360 / total * value,
+            a = (90 - alpha) * Math.PI / 180,
+            x = 300 + R * Math.cos(a),
+            y = 300 - R * Math.sin(a);
+        out.push(r.circle(x, y, 1).attr(marksAttr));
+    }
+}			
+
+
+
+		    var show = function(age) {
+    			$("#out").html("")
+    			var s = "" + age
+    			for (var j = 0; j < s.length; j++) {
+    				$("#out").append("<span class='letter'>" + s[j] + "</span>");
+    			}		    	
+		    }
+		    var draw = function(age) {
+		    	var neg = false;
+		    	var diff = age - (targetAge - current);
+
+		    	if (diff < 0) {
+		    		diff = Math.abs(diff);
+		    		neg = true;
+		    	}
+		    	updateVal(age, R, sec)
+
+		    	for (var i = 0; i < diff; i++) {
+		    		setTimeout(function() {
+		    			if (neg) {
+							current++;		    				
+		    			} else {
+		    				current--;
+		    			}
+		    			show(current)
+
+		    		}, 25 * i);
+		    	}
+		    }
+		    show(targetAge);
+
+			var el = $('#in')
+			el.on("keyup", function(ev){
+				if (ev.keyCode != 13) {
+					return false;
+				}
+				var ages = $(this).val().split("\n")
+				ages = _(ages).map(function(n) { 
+					var i = parseInt(n);
+					if (isNaN(i)) {
+						return 0
+					}
+					return i;
+				});
+				var age = _(ages).reduceRight(function(a, b) { return a + b;});
+				draw(age);
+			});
+updateVal(0, R, sec)
+
+		</script>		
+		<style type="text/css">
+			body {
+                background: -webkit-gradient(radial, 50% 50%, 10, 50% 50%, 850, from(#f3cb45), to(#c37116), color-stop(.6,#ffc83a));		
+            }
+			#content {
+				margin: 0 auto;
+				width: 900px;
+				height: 620px;
+				background-image: url(logo.png), url(bg.png);
+				background-position: bottom left, center top;
+				background-repeat: no-repeat;
+				border-radius: 10px;
+				position: relative;
+				font-family: Arial;
+			}
+			textarea {
+				background-color: rgba(200, 200, 200, 0.1);
+				height: 620px;
+				border: none;
+				color: white;
+				text-align: center;
+				width: 136px;
+				outline: none;
+				resize: none;
+				font-size: 30px;
+			}
+			#out {
+				position: absolute;
+				top: 230px;
+				left: 270px;
+				width: 400px;
+				color: white;
+				font-size: 120px;
+				text-align: center;
+			}
+			#circle {
+				position: absolute;
+				top: 10px;
+				left: 170px;
+				opacity: 0.9;
+			}
+			.letter {
+				display: inline-block;
+				width: auto;
+				padding: 0px;
+				padding-left: 15px;
+				padding-right: 15px;
+				border: 1px solid #111;
+				box-shadow: 2px 2px 2px #000;
+				letter-spacing: 5px;
+                background: -webkit-gradient(radial, 50% 50%, 10, 50% 50%, 100, from(#222), to(#444), color-stop(.6,#111));	
+                border-radius: 10px;
+                margin: 5px;
+                text-shadow: -1px -1px 1px #000;
+			}
+		</style>
+	</body>
+</html>
