@@ -97,7 +97,8 @@
 		    }
 		    show(targetAge);
 
-			var el = $('#in')
+			var el = $('#in');
+			el.focus();
 			el.on("keyup", function(ev){
 				if (ev.keyCode != 13) {
 					return false;
