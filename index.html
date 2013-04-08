@@ -4,26 +4,26 @@
 	<head>
 		<meta charset="utf-8">
 		<title>H</title>
+		<link href='http://fonts.googleapis.com/css?family=Montserrat+Alternates' rel='stylesheet' type='text/css'>				
 	</head>
 	
 	<body>
 		<div id="content">
 			<div id="circle"></div>
-			<textarea id="in"></textarea>
 			<div id="out"></div>
 		</div>
 		<script type="text/javascript" src="./jquery.js"> </script>
 		<script type="text/javascript" src="./underscore.js"> </script>
 		<script type="text/javascript" src="./raphael.js"> </script>
 		<script>
-			var guessA = 20;
+			var guessA = 77;
 			var guessB = 55;
 			var current = window.location.hash.substring(1);
 			if (isNaN(parseInt(current))) {
-				current = 100;
+				current = 0;
 			}
 
-		    var targetAge = total = current;
+		    var total = 100;
 
 			var r = Raphael($("#circle")[0], 600, 600),
 			    R = 245,
@@ -41,20 +41,19 @@
 			    } else {
 			        path = [["M", 300, 300 - R], ["A", R, R, 0, +(alpha > 180), 1, x, y]];
 			    }
-			    var color = "#ffc83a";
+			    var color = "#58c1f8";
 			    if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
-			    	color = "#ff0000";
+			    	color = "#98e455";
 			    }
 			    return {path: path, stroke: color};
 			};
 
-			drawMarks(R, total);
-			var sec = r.path().attr(param).attr({arc: [targetAge, total, R]});
 
+			var sec = r.path().attr(param).attr({arc: [total, total, R]});
 
 			function updateVal(value, R, hand) {
-			  if (value > targetAge)  {
-			  	value = 0;
+			  if (value > total)  {
+			  	value = total;
 			  }
 			  hand.animate({arc: [value, total, R]}, 50, "linear");
 			}
@@ -66,11 +65,23 @@
 			            a = (90 - alpha) * Math.PI / 180,
 			            x = 300 + R * Math.cos(a),
 			            y = 300 - R * Math.sin(a);
-				    var color = "#ffc83a";
+				    var color = "#58c1f8";
 				    if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
-				    	color = "#ff0000";
+				    	color = "#98e455";
 				    }			            
-			        out.push(r.circle(x, y, 5).attr({fill: color, stroke: "none"}));
+				    var size = 5;
+				    var stroke = "none";
+				    if (guessA == value || guessB == value) {
+				    	size = 8;
+				    	stroke = "#000";
+				    }
+				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 3});
+				    if (guessA == value || guessB == value) {
+				    	circle.toFront();
+				    } else {
+				    	circle.toBack();
+				    } 
+			        out.push(circle);
 			    }
 			}	
 
@@ -79,109 +90,68 @@
 		    var show = function(age) {
     			$("#out").html("")
     			var s = "" + age
+    			if (s.length == 1) {
+    				s = "0" + s;
+    			}
     			for (var j = 0; j < s.length; j++) {
     				$("#out").append("<span class='letter'>" + s[j] + "</span>");
     			}		    	
 		    }
-		    var draw = function(age) {
+		    var draw = function(number) {
 		    	var neg = false;
-		    	var diff = age - (targetAge - current);
 
-		    	if (diff < 0) {
-		    		diff = Math.abs(diff);
+		    	if (number < 0) {
+		    		number = Math.abs(number);
 		    		neg = true;
 		    	}
 
-
-		    	for (var i = 0; i < diff; i++) {
+		    	var current = 0;
+		    	for (var i = 0; i < number; i++) {
 		    		setTimeout(function() {
-		    			if (neg) {
-							current++;		    				
-		    			} else {
-		    				current--;
-		    			}
+		    			current++;
 		    			show(current)
 		    			updateVal(current, R, sec)
 		    		}, 50 * i);
 		    	}
 		    }
-		    show(targetAge);
-
-			var el = $('#in');
-			el.focus();
-			el.on("keyup", function(ev){
-				if (ev.keyCode != 13) {
-					return false;
-				}
-				var ages = $(this).val().split("\n")
-				ages = _(ages).map(function(n) { 
-					var i = parseInt(n);
-					if (isNaN(i)) {
-						return 0
-					}
-					return i;
-				});
-				var age = _(ages).reduceRight(function(a, b) { return a + b;});
-				draw(age);
-			});
+		    draw(current);
+		    window.onhashchange = function() {
+		    	draw(parseInt(window.location.hash.substring(1)));
+		    }
+			drawMarks(R, total);
 			updateVal(0, R, sec)
 
 		</script>		
+	    
 		<style type="text/css">
 			body {
-                background: -webkit-gradient(radial, 50% 50%, 10, 50% 50%, 850, from(#f3cb45), to(#c37116), color-stop(.6,#ffc83a));		
+				font-family: 'Montserrat Alternates', serif;
             }
 			#content {
 				margin: 0 auto;
-				width: 900px;
-				height: 620px;
-				background-image: url(bg.png);
-				background-position: bottom left, center top;
-				background-repeat: no-repeat;
-				border-radius: 10px;
-				position: relative;
-				font-family: Arial;
-			}
-			textarea {
-				background-color: rgba(200, 200, 200, 0.1);
-				height: 620px;
-				border: none;
-				color: white;
-				text-align: center;
-				width: 136px;
-				outline: none;
-				resize: none;
-				font-size: 30px;
+				width: 600px;
+				height: 600px;
 			}
 			#out {
-				position: absolute;
-				top: 230px;
-				left: 270px;
-				width: 400px;
+				font-family: 'Montserrat Alternates', serif;
+				margin: 0 auto;
+				padding-top: 110px;
 				color: white;
-				font-size: 120px;
+				font-size: 300px;
 				text-align: center;
+				color: #333;
+				text-shadow: 1px 1px 1px #000
 			}
 			#circle {
 				position: absolute;
-				top: 10px;
-				left: 170px;
-				opacity: 0.9;
 			}
 			.letter {
 				display: inline-block;
 				width: auto;
 				padding: 0px;
-				padding-left: 15px;
-				padding-right: 15px;
-				border: 1px solid #111;
-				box-shadow: 2px 2px 2px #000;
-				letter-spacing: 5px;
-                background: -webkit-gradient(radial, 50% 50%, 10, 50% 50%, 100, from(#222), to(#444), color-stop(.6,#111));	
-                border-radius: 10px;
-                margin: 5px;
-                text-shadow: -1px -1px 1px #000;
 			}
+
+
 		</style>
 	</body>
 </html>
