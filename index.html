@@ -16,6 +16,8 @@
 		<script type="text/javascript" src="./underscore.js"> </script>
 		<script type="text/javascript" src="./raphael.js"> </script>
 		<script>
+			var guessA = 20;
+			var guessB = 55;
 			var current = window.location.hash.substring(1);
 			if (isNaN(parseInt(current))) {
 				current = 100;
@@ -39,7 +41,11 @@
 			    } else {
 			        path = [["M", 300, 300 - R], ["A", R, R, 0, +(alpha > 180), 1, x, y]];
 			    }
-			    return {path: path, stroke: "#ffc83a"};
+			    var color = "#ffc83a";
+			    if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
+			    	color = "#ff0000";
+			    }
+			    return {path: path, stroke: color};
 			};
 
 			drawMarks(R, total);
@@ -50,7 +56,7 @@
 			  if (value > targetAge)  {
 			  	value = 0;
 			  }
-			  hand.animate({arc: [value, total, R]}, 1000, "linear");
+			  hand.animate({arc: [value, total, R]}, 50, "linear");
 			}
 
 			function drawMarks(R, total) {
@@ -60,9 +66,13 @@
 			            a = (90 - alpha) * Math.PI / 180,
 			            x = 300 + R * Math.cos(a),
 			            y = 300 - R * Math.sin(a);
-			        out.push(r.circle(x, y, 1).attr(marksAttr));
+				    var color = "#ffc83a";
+				    if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
+				    	color = "#ff0000";
+				    }			            
+			        out.push(r.circle(x, y, 5).attr({fill: color, stroke: "none"}));
 			    }
-			}			
+			}	
 
 
 
@@ -81,7 +91,7 @@
 		    		diff = Math.abs(diff);
 		    		neg = true;
 		    	}
-		    	updateVal(age, R, sec)
+
 
 		    	for (var i = 0; i < diff; i++) {
 		    		setTimeout(function() {
@@ -91,8 +101,8 @@
 		    				current--;
 		    			}
 		    			show(current)
-
-		    		}, 15 * i);
+		    			updateVal(current, R, sec)
+		    		}, 50 * i);
 		    	}
 		    }
 		    show(targetAge);
