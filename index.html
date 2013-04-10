@@ -50,7 +50,7 @@
 			    }
 			    return {path: path, stroke: color};
 			};
-
+			
 
 			var sec = r.path().attr(param).attr({arc: [total, total, R]});
 
@@ -77,12 +77,16 @@
 				    var size = 5;
 				    var stroke = "none";
 				    if (guessA == value || guessB == value) {
-				    	size = 8;
+				    	size = 12;
 				    	stroke = "#000";
 				    }
-				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 3});
+				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 2});
 				    if (guessA == value || guessB == value) {
 				    	circle.toFront();
+				    	fontAttrs = {'text-anchor': 'center', "font-size": 14, "font-family": "'Montserrat Alternates'" };
+				    	r.text(x , y, "" + value).attr(fontAttrs);
+				    	circle.attr({"opacity": 0.9})
+
 				    } else {
 				    	circle.toBack();
 				    } 
