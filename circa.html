@@ -1,0 +1,169 @@
+<!doctype html>  
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		<title>H</title>
+		<link href='http://fonts.googleapis.com/css?family=Montserrat+Alternates' rel='stylesheet' type='text/css'>				
+		<link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css'
+	</head>
+	
+	<body>
+		<div id="content">
+			<div id="circle"></div>
+			<div id="out"></div>
+		</div>
+		<script type="text/javascript" src="./jquery.js"> </script>
+		<script type="text/javascript" src="./underscore.js"> </script>
+		<script type="text/javascript" src="./raphael.js"> </script>
+		<script>
+			var guessA = parseInt(Math.random()*99);
+			var guessB = parseInt(Math.random()*99);
+			var current = window.location.hash.substring(1);
+			if (isNaN(parseInt(current))) {
+				current = parseInt(Math.random()*99);
+			}
+
+		    var total = 100;
+
+			var r = Raphael($("#circle")[0], 600, 600),
+			    R = 245,
+			    param = {stroke: "#ffc83a", "stroke-width": 70},
+			    marksAttr = {fill: "#ffc83a", stroke: "none"};
+			// Custom Attribute
+			r.customAttributes.arc = function (value, total, R) {
+			    var alpha = 360 / total * value,
+			        a = (90 - alpha) * Math.PI / 180,
+			        x = 300 + R * Math.cos(a),
+			        y = 300 - R * Math.sin(a),
+			        path;
+			    if (total == value) {
+			        path = [["M", 300, 300 - R], ["A", R, R, 0, 1, 1, 299.99, 300 - R]];
+			    } else {
+			        path = [["M", 300, 300 - R], ["A", R, R, 0, +(alpha > 180), 1, x, y]];
+			    }
+			    var color = "#58c1f8";
+			    if (Math.abs(guessA - value) == Math.abs(guessB - value)) {
+			    	color = "#333"
+			    } else if(Math.abs(guessA - value) > Math.abs(guessB - value)) {
+			    	color = "#98e455";
+			    }
+			    return {path: path, stroke: color};
+			};
+			
+
+			var sec = r.path().attr(param).attr({arc: [total, total, R]});
+
+			function updateVal(value, R, hand, time) {
+			  if (value > total)  {
+			  	value = total;
+			  }
+			  hand.animate({arc: [value, total, R]}, time, "linear");
+			}
+
+			function drawMarks(R, total) {
+			    var out = r.set();
+			    for (var value = 0; value < total; value++) {
+			        var alpha = 360 / total * value,
+			            a = (90 - alpha) * Math.PI / 180,
+			            x = 300 + R * Math.cos(a),
+			            y = 300 - R * Math.sin(a);
+				    var color = "#58c1f8";
+				    if (Math.abs(guessA - value) == Math.abs(guessB - value)) {
+				    	color = "#333"
+				    } else if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
+				    	color = "#98e455";
+				    }			            
+				    var size = 5;
+				    var stroke = "none";
+				    if (guessA == value || guessB == value) {
+				    	size = 12;
+				    	stroke = "#000";
+				    }
+				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 2});
+				    if (guessA == value || guessB == value) {
+				    	circle.toFront();
+				    	fontAttrs = {'text-anchor': 'center', "font-size": 14, "font-family": "'Montserrat Alternates'" };
+				    	r.text(x , y, "" + value).attr(fontAttrs);
+				    	circle.attr({"opacity": 0.9})
+
+				    } else {
+				    	circle.toBack();
+				    } 
+			        out.push(circle);
+			    }
+			}	
+
+
+
+		    var show = function(age) {
+    			$("#out").html("")
+    			var s = "" + age
+    			if (s.length == 1) {
+    				s = "0" + s;
+    			}
+    			for (var j = 0; j < s.length; j++) {
+    				$("#out").append("<span class='letter'>" + s[j] + "</span>");
+    			}		    	
+		    }
+		    var draw = function(number) {
+		    	var neg = false;
+
+		    	if (number < 0) {
+		    		number = Math.abs(number);
+		    		neg = true;
+		    	}
+
+		    	var current = 0;
+		    	for (var i = 0; i < number; i++) {
+		    		setTimeout(function() {
+		    			current++;
+		    			show(current);
+		    			updateVal(current, R, sec, 50);
+		    		}, 50 * i);
+		    	}
+		    }
+		    draw(current);
+			drawMarks(R, total);
+			updateVal(0, R, sec, 0)
+
+			sec.click(function(){
+		    	draw(parseInt(Math.random()*99));				
+			});
+
+		</script>		
+	    
+		<style type="text/css">
+			body {
+				font-family: 'Montserrat Alternates', serif;
+            }
+			#content {
+				margin: 0 auto;
+				width: 600px;
+				height: 600px;
+				/*-webkit-transform: scale(0.5);*/
+			}
+			#out {
+				font-family: 'Noto sans', serif;
+				font-weight: bold;
+				margin: 0 auto;
+				padding-top: 90px;
+				color: white;
+				font-size: 300px;
+				text-align: center;
+				color: #333;
+				text-shadow: 1px 1px 1px #000
+			}
+			#circle {
+				position: absolute;
+			}
+			.letter {
+				display: inline-block;
+				width: auto;
+				padding: 0px;
+			}
+
+
+		</style>
+	</body>
+</html>
