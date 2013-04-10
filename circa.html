@@ -52,12 +52,9 @@
 			};
 			
 
-			var sec = r.path().attr(param).attr({arc: [total, total, R]});
+			var sec = r.path().attr(param).attr({arc: [0, total, R]});
 
 			function updateVal(value, R, hand, time) {
-			  if (value > total)  {
-			  	value = total;
-			  }
 			  hand.animate({arc: [value, total, R]}, time, "linear");
 			}
 
@@ -77,13 +74,13 @@
 				    var size = 5;
 				    var stroke = "none";
 				    if (guessA == value || guessB == value) {
-				    	size = 12;
+				    	size = 16;
 				    	stroke = "#000";
 				    }
 				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 2});
 				    if (guessA == value || guessB == value) {
 				    	circle.toFront();
-				    	fontAttrs = {'text-anchor': 'center', "font-size": 14, "font-family": "'Montserrat Alternates'" };
+				    	fontAttrs = {'text-anchor': 'center', "font-size": 18, "font-family": "'Montserrat Alternates'" };
 				    	r.text(x , y, "" + value).attr(fontAttrs);
 				    	circle.attr({"opacity": 0.9})
 
@@ -107,25 +104,22 @@
     			}		    	
 		    }
 		    var draw = function(number) {
-		    	var neg = false;
-
 		    	if (number < 0) {
 		    		number = Math.abs(number);
-		    		neg = true;
 		    	}
-
 		    	var current = 0;
 		    	for (var i = 0; i < number; i++) {
 		    		setTimeout(function() {
 		    			current++;
 		    			show(current);
-		    			updateVal(current, R, sec, 50);
 		    		}, 50 * i);
 		    	}
+		    	updateVal(number, R, sec, 50 * number);
 		    }
+		    updateVal(0, R, sec, 0)
 		    draw(current);
 			drawMarks(R, total);
-			updateVal(0, R, sec, 0)
+			
 
 			sec.click(function(){
 		    	draw(parseInt(Math.random()*99));				
