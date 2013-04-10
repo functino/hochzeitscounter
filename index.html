@@ -5,6 +5,7 @@
 		<meta charset="utf-8">
 		<title>H</title>
 		<link href='http://fonts.googleapis.com/css?family=Montserrat+Alternates' rel='stylesheet' type='text/css'>				
+		<link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css'
 	</head>
 	
 	<body>
@@ -16,8 +17,8 @@
 		<script type="text/javascript" src="./underscore.js"> </script>
 		<script type="text/javascript" src="./raphael.js"> </script>
 		<script>
-			var guessA = 77;
-			var guessB = 55;
+			var guessA = parseInt(Math.random()*99);
+			var guessB = parseInt(Math.random()*99);
 			var current = window.location.hash.substring(1);
 			if (isNaN(parseInt(current))) {
 				current = parseInt(Math.random()*99);
@@ -42,7 +43,9 @@
 			        path = [["M", 300, 300 - R], ["A", R, R, 0, +(alpha > 180), 1, x, y]];
 			    }
 			    var color = "#58c1f8";
-			    if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
+			    if (Math.abs(guessA - value) == Math.abs(guessB - value)) {
+			    	color = "#333"
+			    } else if(Math.abs(guessA - value) > Math.abs(guessB - value)) {
 			    	color = "#98e455";
 			    }
 			    return {path: path, stroke: color};
@@ -51,11 +54,11 @@
 
 			var sec = r.path().attr(param).attr({arc: [total, total, R]});
 
-			function updateVal(value, R, hand) {
+			function updateVal(value, R, hand, time) {
 			  if (value > total)  {
 			  	value = total;
 			  }
-			  hand.animate({arc: [value, total, R]}, 50, "linear");
+			  hand.animate({arc: [value, total, R]}, time, "linear");
 			}
 
 			function drawMarks(R, total) {
@@ -66,7 +69,9 @@
 			            x = 300 + R * Math.cos(a),
 			            y = 300 - R * Math.sin(a);
 				    var color = "#58c1f8";
-				    if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
+				    if (Math.abs(guessA - value) == Math.abs(guessB - value)) {
+				    	color = "#333"
+				    } else if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
 				    	color = "#98e455";
 				    }			            
 				    var size = 5;
@@ -109,22 +114,18 @@
 		    	for (var i = 0; i < number; i++) {
 		    		setTimeout(function() {
 		    			current++;
-		    			show(current)
-		    			updateVal(current, R, sec)
+		    			show(current);
+		    			updateVal(current, R, sec, 50);
 		    		}, 50 * i);
 		    	}
 		    }
 		    draw(current);
-		    window.onhashchange = function() {
-		    	current = parseInt(window.location.hash.substring(1))
-		    	if (isNaN(current))  {
-		    		current = parseInt(Math.random()*99);		    		
-		    	}
-
-		    	draw(current);
-		    }
 			drawMarks(R, total);
-			updateVal(0, R, sec)
+			updateVal(0, R, sec, 0)
+
+			sec.click(function(){
+		    	draw(parseInt(Math.random()*99));				
+			});
 
 		</script>		
 	    
@@ -136,11 +137,13 @@
 				margin: 0 auto;
 				width: 600px;
 				height: 600px;
+				/*-webkit-transform: scale(0.5);*/
 			}
 			#out {
-				font-family: 'Montserrat Alternates', serif;
+				font-family: 'Noto sans', serif;
+				font-weight: bold;
 				margin: 0 auto;
-				padding-top: 110px;
+				padding-top: 90px;
 				color: white;
 				font-size: 300px;
 				text-align: center;
