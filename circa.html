@@ -5,7 +5,8 @@
 		<meta charset="utf-8">
 		<title>H</title>
 		<link href='http://fonts.googleapis.com/css?family=Montserrat+Alternates' rel='stylesheet' type='text/css'>				
-		<link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css'
+		<link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css' />
+		<meta name="apple-mobile-web-app-capable" content="yes" /> 		
 	</head>
 	
 	<body>
@@ -116,13 +117,19 @@
 		    	}
 		    	updateVal(number, R, sec, 50 * number);
 		    }
-		    updateVal(0, R, sec, 0)
-		    draw(current);
+
+		    setTimeout(function() {
+		    	draw(current);	
+		    }, 500);		    
 			drawMarks(R, total);
 			
 
 			sec.click(function(){
-		    	draw(parseInt(Math.random()*99));				
+				updateVal(0, R, sec, 0);
+				setTimeout(function() {
+					draw(parseInt(Math.random()*99));				
+				}, 50);
+		    	
 			});
 
 		</script>		
@@ -146,7 +153,6 @@
 				font-size: 300px;
 				text-align: center;
 				color: #333;
-				text-shadow: 1px 1px 1px #000
 			}
 			#circle {
 				position: absolute;
