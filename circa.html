@@ -25,23 +25,21 @@
 				current = parseInt(Math.random()*99);
 			}
 
-		    var total = 100;
+		    var total = 99;
 
 			var r = Raphael($("#circle")[0], 600, 600),
-			    R = 245,
-			    param = {stroke: "#ffc83a", "stroke-width": 70},
-			    marksAttr = {fill: "#ffc83a", stroke: "none"};
-			// Custom Attribute
-			r.customAttributes.arc = function (value, total, R) {
+			    radius = 245,
+			    width = 300;
+			r.customAttributes.arc = function (value, total, radius) {
 			    var alpha = 360 / total * value,
 			        a = (90 - alpha) * Math.PI / 180,
-			        x = 300 + R * Math.cos(a),
-			        y = 300 - R * Math.sin(a),
+			        x = 300 + radius * Math.cos(a),
+			        y = 300 - radius * Math.sin(a),
 			        path;
 			    if (total == value) {
-			        path = [["M", 300, 300 - R], ["A", R, R, 0, 1, 1, 299.99, 300 - R]];
+			        path = [["M", width, width - radius], ["A", radius, radius, 0, 1, 1, width-0.01, width - radius]];
 			    } else {
-			        path = [["M", 300, 300 - R], ["A", R, R, 0, +(alpha > 180), 1, x, y]];
+			        path = [["M", width, width - radius], ["A", radius, radius, 0, +(alpha > 180), 1, x, y]];
 			    }
 			    var color = "#58c1f8";
 			    if (Math.abs(guessA - value) == Math.abs(guessB - value)) {
@@ -53,25 +51,28 @@
 			};
 			
 
-			var sec = r.path().attr(param).attr({arc: [0, total, R]});
+			var sec = r.path().attr({stroke: "#ffc83a", "stroke-width": 70, arc: [0, total, radius]});
 
-			function updateVal(value, R, hand, time) {
-			  hand.animate({arc: [value, total, R]}, time, "linear");
+			function updateVal(value, radius, hand, time) {
+			  hand.animate({arc: [value, total, radius]}, time, "linear");
 			}
 
-			function drawMarks(R, total) {
+			function drawMarks(radius, total) {
 			    var out = r.set();
 			    for (var value = 0; value < total; value++) {
 			        var alpha = 360 / total * value,
 			            a = (90 - alpha) * Math.PI / 180,
-			            x = 300 + R * Math.cos(a),
-			            y = 300 - R * Math.sin(a);
+			            x = 300 + radius * Math.cos(a),
+			            y = 300 - radius * Math.sin(a);
 				    var color = "#58c1f8";
 				    if (Math.abs(guessA - value) == Math.abs(guessB - value)) {
 				    	color = "#333"
 				    } else if (Math.abs(guessA - value) > Math.abs(guessB - value)) {
 				    	color = "#98e455";
-				    }			            
+				    }			          
+				    if (value == 0) {
+				    	color = "#ddd"
+				    }   
 				    var size = 5;
 				    var stroke = "none";
 				    if (guessA == value || guessB == value) {
@@ -104,40 +105,36 @@
     				$("#out").append("<span class='letter'>" + s[j] + "</span>");
     			}		    	
 		    }
+
+		    var delay = 35;
 		    var draw = function(number) {
-		    	if (number < 0) {
-		    		number = Math.abs(number);
-		    	}
 		    	var current = 0;
 		    	for (var i = 0; i < number; i++) {
 		    		setTimeout(function() {
 		    			current++;
 		    			show(current);
-		    		}, 50 * i);
+		    		}, delay * i);
 		    	}
-		    	updateVal(number, R, sec, 50 * number);
+		    	updateVal(number, radius, sec, delay * number);
 		    }
 
 		    setTimeout(function() {
 		    	draw(current);	
-		    }, 500);		    
-			drawMarks(R, total);
+		    }, 1000);		    
+			drawMarks(radius, total);
 			
 
 			sec.click(function(){
-				updateVal(0, R, sec, 0);
+				updateVal(0, radius, sec, 0);
 				setTimeout(function() {
 					draw(parseInt(Math.random()*99));				
-				}, 50);
+				}, 700);
 		    	
 			});
 
 		</script>		
 	    
 		<style type="text/css">
-			body {
-				font-family: 'Montserrat Alternates', serif;
-            }
 			#content {
 				margin: 0 auto;
 				width: 600px;
