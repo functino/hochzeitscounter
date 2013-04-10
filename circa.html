@@ -75,15 +75,15 @@
 				    var size = 5;
 				    var stroke = "none";
 				    if (guessA == value || guessB == value) {
-				    	size = 16;
+				    	size = 27;
 				    	stroke = "#000";
 				    }
 				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 2});
 				    if (guessA == value || guessB == value) {
 				    	circle.toFront();
-				    	fontAttrs = {'text-anchor': 'center', "font-size": 18, "font-family": "'Montserrat Alternates'" };
+				    	fontAttrs = {'text-anchor': 'center', "font-size": 32, "font-family": "'Montserrat Alternates'" };
 				    	r.text(x , y, "" + value).attr(fontAttrs);
-				    	circle.attr({"opacity": 0.9})
+				    	circle.attr({"opacity": 0.8})
 
 				    } else {
 				    	circle.toBack();
