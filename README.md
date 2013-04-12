@@ -1,4 +1,4 @@
-Countdown Visualizing
+Countdown Visualizing / Experiment
 ======================
 I used this simple HTML-page in a game at a wedding. The task was to find people from the audience so that their combined age reaches 305. Maybe it is useful for you too....
 
