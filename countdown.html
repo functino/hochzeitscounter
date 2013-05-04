@@ -1,0 +1,283 @@
+<!doctype html>  
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		<title>H</title>
+		<link href='http://fonts.googleapis.com/css?family=Montserrat+Alternates' rel='stylesheet' type='text/css'>				
+		<link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css' />
+		<meta name="apple-mobile-web-app-capable" content="yes" /> 		
+	</head>
+	
+	<body>
+		<div id="content">
+			<div id="percent">
+				<div id="circle"></div>
+				<div id="out"></div>
+			</div>
+			<div id="countbox"></div>
+		</div>
+
+		<script type="text/javascript" src="./jquery.js"> </script>
+		<script type="text/javascript" src="./underscore.js"> </script>
+		<script type="text/javascript" src="./raphael.js"> </script>
+		<script type="text/javascript" src="./moment.js"> </script>
+		<script type="text/javascript">
+		year=2013;month=5;day=14;hour=22;min=0;sec=0;main_titel="New website coming soon!";sub_titel="leave some info here";social_network_titel="Get in touch through our social networks.";facebook="http://www.facebook.com";twitter="http://twitter.com/";rss="hide";deviantart="http://matthiasoben.deviantart.com/";myspace="http://www.myspace.com";lastfm="hide";flikr="hide";
+		</script>
+
+		<script type="text/javascript" src="./counter.js"> </script>
+		<script>
+			var guessA = parseInt(Math.random()*99);
+			var guessB = parseInt(Math.random()*99);
+			var current = window.location.hash.substring(1);
+			if (isNaN(parseInt(current))) {
+				current = parseInt(Math.random()*99);
+			}
+			var start = moment("2013-05-02 22:00:00");
+			var stop = moment("2013-05-14 20:00:00");
+			var total = 100; //Math.round((stop - start) / 1000);
+			var current = Math.floor((moment() - start) / (stop - start) * 100);
+			console.log(moment("2013-05-03 23:43:00").format('MMMM Do YYYY, h:mm:ss a'))
+			console.log(moment("2013-05-03 23:43:00") - moment());
+
+		    //var total = Math.round((moment("2013-05-03 23:43:00") - moment()) / 1000);
+		    console.log(total)
+		    console.log(current)
+
+			var r = Raphael($("#circle")[0], 600, 600),
+			    radius = 245,
+			    width = 300;
+			r.customAttributes.arc = function (value, total, radius, background) {
+			    var alpha = 360 / total * value,
+			        a = (90 - alpha) * Math.PI / 180,
+			        x = 300 + radius * Math.cos(a),
+			        y = 300 - radius * Math.sin(a),
+			        path;
+			    if (total == value) {
+			        path = [["M", width, width - radius], ["A", radius, radius, 0, 1, 1, width-0.01, width - radius]];
+			    } else {
+			        path = [["M", width, width - radius], ["A", radius, radius, 0, +(alpha > 180), 1, x, y]];
+			    }
+			    color = "#98e455";
+			    if (background) {
+			    	color = "#1a1a1a";
+			    	color = "#0a0a0a";
+			    }
+			    return {path: path, stroke: color};
+			};
+			
+
+			var sec = r.path().attr({stroke: "#ffc83a", "stroke-width": 70, arc: [0, total, radius]});
+
+			var sec2 = r.path().attr({stroke: "#333", "stroke-width": 75, arc: [total, total, radius, true]});
+			function updateVal(value, radius, hand, time) {
+			  hand.animate({arc: [value, total, radius]}, time, "linear");
+			}
+
+			function drawMarks(radius, total) {
+			    var out = r.set();
+			    for (var value = 0; value < total; value++) {
+			        var alpha = 360 / total * value,
+			            a = (90 - alpha) * Math.PI / 180,
+			            x = 300 + radius * Math.cos(a),
+			            y = 300 - radius * Math.sin(a);
+				    var color = "#58c1f8";
+				    	color = "#333"
+				    	color = "#98e455";
+				    	color = "#fff"
+				    var size = 5;
+				    var stroke = "none";
+				    var circle = r.circle(x, y, size).attr({fill: color, stroke: stroke, "stroke-width": 2});
+				    circle.toBack();
+			        out.push(circle);
+			    }
+			}	
+
+
+
+		    var show = function(age) {
+    			$("#out").html("")
+    			if (age == 100) {
+    				return;
+    			}
+    			var s = "" + age
+    			if (s.length == 1) {
+    				s = "0" + s;
+    			}
+    			for (var j = 0; j < s.length; j++) {
+    				$("#out").append("<span class='letter'>" + s[j] + "</span>");
+    			}		    	
+    			$("#out").append("<span class='letter percent'>%</span>");
+		    }
+
+		    var interval = setInterval(function() {
+
+		    	var delay = 35;		    	
+		    	var current = Math.floor((moment() - start) / (stop - start) * 100);
+
+		    	show(current)
+		    	updateVal(current, radius, sec, delay * current);
+		    	console.log("setTimeout", current);		    	
+		    	if (current >= 100 ) {
+		    		clearInterval(interval)
+		    	}
+		    }, 1000);		    
+			drawMarks(radius, total);
+			sec2.toBack();
+			
+
+		</script>		
+	    
+		<style type="text/css">
+			body {
+				background-color: #111;
+			}
+			#content {
+				width: 600px;
+				height: 600px;
+				position: absolute;
+				margin: 0 auto;
+			}
+			#countbox {
+				position: absolute;
+				top: 230px;
+				left: 620px;
+			}
+			#out {
+				font-family: 'Noto sans', serif;
+				font-weight: bold;
+				margin: 0 auto;
+				padding-top: 150px;
+				padding-left: 20px;
+				color: white;
+				font-size: 200px;
+				text-align: center;
+				color: #eee;
+			}
+			#circle {
+				position: absolute;
+			}
+			.letter {
+				display: inline-block;
+				width: auto;
+				padding: 0px;
+			}
+			.percent {
+				color: #555;
+				font-size: 60px;
+			}
+
+
+
+/* -------------- BEGIN COUNTER ---------------------*/
+
+#countbox{
+	padding-top: 20px;
+	color: #fff;
+	font-family: Myriad Pro,Helvetica,sans-serif;
+	font-size: 70px;
+	width: 432px;
+	height: 200px;
+	margin-left:auto;
+	margin-right: auto;
+}
+
+#days{
+	float: left;
+	text-align: center;	
+	background-image:url('flip.png');
+	background-repeat:no-repeat;
+	margin: 0 7px 0 7px;
+	height: 89px;
+	width: 94px;
+	z-index:1;
+}
+
+		#days_text{
+			background-image:url('days_text.jpg');
+			background-position: center;
+			background-repeat:no-repeat;
+			position: absolute;
+			margin-top: 30px;
+			height: 26px;
+			width: 94px;
+		}
+	
+#hours{	
+	float: left;
+	text-align: center;
+	background-image:url('flip.png');
+	background-repeat:no-repeat;
+	margin: 0 7px 0 7px;
+	height: 89px;
+	width: 94px;
+	z-index:1;
+}
+
+		#hours_text{
+			background-image:url('hours_text.jpg');
+			background-position: center;
+			background-repeat:no-repeat;
+			position: absolute;
+			margin-top: 30px;
+			height: 26px;
+			width: 94px;
+		}
+
+#mins{
+	float: left;
+	text-align: center;
+	background-image:url('flip.png');
+	background-repeat:no-repeat;
+	margin: 0 7px 0 7px;
+	height: 89px;
+	width: 94px;
+    z-index:1;
+}
+
+		#mins_text{
+			background-image:url('mins_text.jpg');
+			background-position: center;
+			background-repeat:no-repeat;
+			position: absolute;
+			margin-top: 30px;
+			height: 26px;
+			width: 94px;
+		}
+
+#secs{
+	float: left;
+	text-align: center;
+	background-image:url('flip.png');
+	background-repeat:no-repeat;
+	margin: 0 7px 0 7px;
+	height: 89px;
+	width: 94px;
+    z-index:1;
+}
+
+		#secs_text{
+			background-image:url('secs_text.jpg');
+			background-position: center;
+			background-repeat:no-repeat;
+			position: absolute;
+			margin-top: 30px;
+			height: 26px;
+			width: 94px;
+		}
+
+#days span, #hours span, #mins span , #secs span {
+	background: url(flip_gradient.png);
+	background-repeat:no-repeat;
+	position: absolute;
+	display: block;
+	height: 57px;
+	width: 94px;
+}
+
+/* -------------- END COUNTER ---------------------*/
+
+		</style>
+	</body>
+</html>
